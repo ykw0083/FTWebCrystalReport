@@ -3,7 +3,6 @@ create procedure
 @docid int
 AS
 begin
-
 	select top 1 T1.CrServer, T1.CrDatabase, T1.CrDBUser, T1.CrDBPwd from ocmp T0 inner join OCRC T1 on T0.FTSAPConn = T1.Oid inner join OCRR T2 on T2.Company = T0.OID and T2.OID = @docid
 
 end
@@ -22,7 +21,7 @@ end
 go
 
 
-create PROCEDURE [dbo].[LoadRPT1ById_sp]
+create PROCEDURE [dbo].[LoadRPT1ByHdr_sp]
 	@CrReport int -- header oid
 as
 begin
@@ -32,3 +31,18 @@ begin
 	 FROM OCRP T0 WHERE T0.CrReport = @CrReport
 end
 go
+
+
+create PROCEDURE [dbo].[LoadRPT1ById_sp]
+	@OID int
+as
+begin
+	SELECT T0.OID, T0.CrReport, T0.ParamCode, T0.ParamName
+	, T0.ParamType -- 0 = string/ 1 = date
+	, T0.ParamSQL
+	 FROM OCRP T0 WHERE T0.OID = @OID
+end
+go
+
+
+

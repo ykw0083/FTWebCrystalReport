@@ -10,6 +10,9 @@
     <link href="/css/toastr.css" rel="stylesheet" type="text/css" />
     <link href="/css/jquery-ui-1.12.1.css" rel="stylesheet" />
     <script src="/Scripts/jquery-3.2.1.min.js"></script>
+<%--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" ></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>--%>
+
     <script src="/scripts/popper.min.js" ></script>
     <script src="/Scripts/bootstrap.min.js" ></script>
 
@@ -154,71 +157,95 @@
         btn.attr('disabled', false);
     }
     $(document).ready(function () {
-
         var url = window.location.href;
         //var domain_url = "http://localhost:50600";
         var domain_url = get_hostname(url)
         var report_app = ""; //"/FTWebCrystalReport";
         console.log(get_hostname(url));
         var api_path = domain_url + report_app + "/api";
+        $.ajax({
+            type: "get",
+            url: api_path + "/getreportparams/query/-1",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            data: {},
+            success: function (result) {
+                console.log(result);
+            },
+            failure: function () {
+                alert("Error");
+            },
+            complete: function (oSettings, json) {
+                setTimeout(function () {
+                    hideModal();
+                }, 500);
+            }
+        });
+        var lookuptable = $('#lookuptable').DataTable({
+            ajax: {
+                url: api_path + "/getreportparams/query/-1" ,
+                dataSrc: ''
+            },
+            "columnDefs": [{
+                "targets": "_all",
+                "orderable": false
+            }],
+            columnDefs: [{
+                targets: "_all",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('data-label', $(this).closest('table').find('th').eq(col).html());
+                },
+            }],
+            "columns": [
+                { data: "code" },
+                { data: "name" },
+            ],
+            paging: false, bFilter: false, "bInfo": false
+        });
+        $('#lookuptable tbody').on('click', 'tr', function () {
+            //$(this).toggleClass('selected');
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            }
+            else {
+                lookuptable.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+        var itemdetails = $('#itemdetails').DataTable({
 
+            "columnDefs": [{
+                "targets": "_all",
+                "orderable": false
+            }],
+            columnDefs: [{
+                targets: "_all",
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).attr('data-label', $(this).closest('table').find('th').eq(col).html());
+                },
+            }],
+            "order": [[0, "asc"]],
+            "columns": [
+                null, // Id
+                null, // Param Name
+                null, // Param Display Name
+                {
+                    mRender: function (data, type, row) {
+                        return "<input type='text' class='form-control js-paramvalue' style='width:100%' value='" + data + "' /> "
+                    }
+                }, // Param value
+                null, // data type
+                null, // Param SQL
+            ],
+            paging: false, bFilter: false, "bInfo": false
+        });
         var params = getURLParameters(url);
         if (Object.keys(params).length) {
             var report_id = params["id"];
             id.val(report_id);
-            console.log(id.val());
-            $("#loadingModal").modal('show');
-            var lookuptable = $('#lookuptable').DataTable({
-                ajax: {
-                    url: api_path + "/getreportparams/query/" + 1,
-                    dataSrc: ''
-                },
-                "columnDefs": [{
-                    "targets": "_all",
-                    "orderable": false
-                }],
-                columnDefs: [{
-                    targets: "_all",
-                    createdCell: function (td, cellData, rowData, row, col) {
-                        $(td).attr('data-label', $(this).closest('table').find('th').eq(col).html());
-                    },
-                }],
-                "columns": [
-                    { data: "code" },
-                    { data: "name" },
-                ],
-                paging: false, bFilter: false, "bInfo": false
-            });
-            $('#lookuptable tbody').on('click', 'tr', function () {
-                $(this).toggleClass('selected');
-            });
-            var itemdetails = $('#itemdetails').DataTable({
 
-                "columnDefs": [{
-                    "targets": "_all",
-                    "orderable": false
-                }],
-                columnDefs: [{
-                    targets: "_all",
-                    createdCell: function (td, cellData, rowData, row, col) {
-                        $(td).attr('data-label', $(this).closest('table').find('th').eq(col).html());
-                    },
-                }],
-                "order": [[0, "asc"]],
-                "columns": [
-                    null, // Id
-                    null, // Param Name
-                    null, // Param Display Name
-                    {
-                        mRender: function (data, type, row) {
-                            return "<input type='text' class='form-control js-paramvalue' style='width:100%' value='" + data + "' /> "
-                        }
-                    }, // Param value
-                    null, // data type
-                    null, // Param SQL
-                ],
-                paging: false, bFilter: false, "bInfo": false
-            });
+            $("#loadingModal").modal('show');
+         
             $.ajax({
                 type: "get",
                 url: api_path + "/getreportparams/single/" + report_id,
@@ -302,7 +329,7 @@
                     ButtonReset(button, text);
                     toastr.success("Report generated.");
                     //window.open(pathinfo.pdfpath + datainfo.username + "/" + result, '_blank', '');
-                    window.open(domain_url + report_web + "/pdf/" + report_id + "/" + result, '_blank', '');
+                    window.open(domain_url + report_app + "/pdf/" + report_id + "/" + result, '_blank', '');
                     hideModal();
                     setTimeout(function () {
                         window.close();
@@ -325,6 +352,8 @@
             idx.val($(this).parents("tr:first")[0].rowIndex - 1);
             var line_id = itemdetails.cell(idx.val(), id_column).data();
             var sql = itemdetails.cell(idx.val(), paramsql_column).data();
+
+            console.log(sql);
             if (sql != "") {
                 $('#lookupModal').modal({ backdrop: 'static', keyboard: false }, 'show');
                 lookuptable.ajax.url(api_path + "/getreportparams/query/" + line_id).load();

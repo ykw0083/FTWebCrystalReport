@@ -89,7 +89,7 @@ namespace FTWebCrystalReport.Models
         public static List<ft_RPT1> LoadLinesBySKHdr(int skhdr)
         {
             ft_RPT1 d = null;
-            string spName = "LoadRPT1ById_sp";
+            string spName = "LoadRPT1ByHdr_sp";
 
             DataTable dt = new DataTable();
             dt = DAC.ExecuteDataTable(spName,
@@ -121,7 +121,7 @@ namespace FTWebCrystalReport.Models
 
             DataTable dt = new DataTable();
             dt = DAC.ExecuteDataTable(spName,
-                   DAC.Parameter(CN_SKHdr, id));
+                   DAC.Parameter(CN_Id, id));
             if (dt.Rows.Count > 0)
             {
                 d.Id = int.Parse(dt.Rows[0][CN_Id].ToString().Trim());
