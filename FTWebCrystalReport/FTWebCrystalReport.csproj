@@ -170,6 +170,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="CrLayouts.aspx" />
     <Content Include="CrParams.aspx" />
     <Content Include="css\animate.css" />
     <Content Include="css\bootstrap.min.css" />
@@ -312,6 +313,13 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\GenReportController.cs" />
     <Compile Include="Controllers\GetReportController.cs" />
+    <Compile Include="CrLayouts.aspx.cs">
+      <DependentUpon>CrLayouts.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CrLayouts.aspx.designer.cs">
+      <DependentUpon>CrLayouts.aspx</DependentUpon>
+    </Compile>
     <Compile Include="CrParams.aspx.cs">
       <DependentUpon>CrParams.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
