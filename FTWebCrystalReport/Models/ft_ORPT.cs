@@ -17,7 +17,7 @@ namespace FTWebCrystalReport.Models
         protected static string CN_RptName = "ReportName";
         protected static string CN_RptDisplayName = "ReportName";
         protected static string CN_RptPath = "ReportPathFile";
-
+        protected static string CN_docid = "docid";
         #endregion
 
         #region Properties
@@ -56,7 +56,14 @@ namespace FTWebCrystalReport.Models
             }
             return h;
         }
-        #endregion  
+        public static void LoadLinesById_afterlayoutprint(int id, int docid)
+        {
+            string spName = "LoadORPTById_sp_afterlayoutprint";
+            DAC.ExecuteDataTable(spName,
+                   DAC.Parameter(CN_Id, id),
+                   DAC.Parameter(CN_docid, docid));
+        }
+        #endregion
     }
 
     public class ft_RPT1

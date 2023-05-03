@@ -17,8 +17,8 @@ namespace FTWebCrystalReport.Controllers
     public class GenReportController : ApiController
     {
         [HttpGet]
-        [Route("api/GenLayout/{id}/{oid}/{userid}")]
-        public HttpResponseMessage GenerateReport(string id, string oid, string userid)
+        [Route("api/GenLayout/{id}/{docid}/{userid}")]
+        public HttpResponseMessage GenerateReport(string id, string docid, string userid)
         {
             HttpStatusCode stsCode = HttpStatusCode.OK;
             string message = "";
@@ -29,9 +29,9 @@ namespace FTWebCrystalReport.Controllers
                 bool foundoid = false;
                 foreach (ft_RPT1 d in t.Lines)
                 {
-                    if (d.ParamName == "oid" || d.ParamName == "@oid" || d.ParamName == "?oid")
+                    if (d.ParamName == "docid" || d.ParamName == "@docid" || d.ParamName == "?docid")
                     {
-                        d.ParamValue = oid;
+                        d.ParamValue = docid;
                         foundoid = true;
                     }
                     if (d.ParamName == "userid" || d.ParamName == "@userid" || d.ParamName == "?userid")
@@ -44,16 +44,19 @@ namespace FTWebCrystalReport.Controllers
                     //message = "oid parameter not found";
                     //stsCode = HttpStatusCode.BadRequest;
                     //return Request.CreateResponse<string>(stsCode, message);
-                    throw new Exception("oid parameter not found");
+                    throw new Exception("docid parameter not found");
                 }
 
                 message = genCrystalReport(t);
+
+                ft_ORPT.LoadLinesById_afterlayoutprint(int.Parse(id), int.Parse(docid));
             }
             catch (Exception ex)
             {
                 message = ex.Message;
                 stsCode = HttpStatusCode.BadRequest;
             }
+
             return Request.CreateResponse<string>(stsCode, message);
         }
 

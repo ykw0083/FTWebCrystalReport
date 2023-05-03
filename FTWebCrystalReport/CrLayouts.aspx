@@ -49,7 +49,7 @@
 
 <script>
     var id = $("#txtID");
-    var oid = $("#txtLineID");
+    var docid = $("#txtLineID");
     var userid = $("#txtuserid");
 
     function getURLParameters(url) {
@@ -82,13 +82,13 @@
         if (Object.keys(params).length) {
             var report_id = params["id"];
             id.val(report_id);
-            var report_oid = params["oid"];
-            oid.val(report_oid);
+            var report_docid = params["docid"];
+            docid.val(report_docid);
             var report_userid = params["userid"];
             userid.val(report_userid);
 
             $.ajax({
-                url: api_path + "/GenLayout/" + id.val() + "/" + oid.val() + "/" + userid.val(),
+                url: api_path + "/GenLayout/" + id.val() + "/" + docid.val() + "/" + userid.val(),
                 method: "GET",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",

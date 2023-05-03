@@ -1,3 +1,19 @@
+create PROCEDURE [dbo].[LoadORPTById_sp_afterlayoutprint]
+	@OID int,
+	@docid int
+AS
+begin
+	declare @reportname nvarchar(100)
+
+	SELECT @reportname = T0.ReportName
+	 FROM OCRR T0 
+	 WHERE T0.OID = @OID
+
+	 --update transaction data by @docid base on @reportname
+end
+go
+
+
 create procedure
 [dbo].[LoadCrConn_sp] 
 @docid int
