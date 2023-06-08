@@ -1,6 +1,7 @@
 ﻿using CrystalDecisions.CrystalReports.Engine;
 using CrystalDecisions.Shared;
 using FTWebCrystalReport.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -26,6 +27,9 @@ namespace FTWebCrystalReport.Controllers
             {
                 ft_ORPT t = new ft_ORPT();
                 t = ft_ORPT.LoadById(int.Parse(id));
+
+                //test = JsonConvert.SerializeObject(t);
+
                 bool foundoid = false;
                 foreach (ft_RPT1 d in t.Lines)
                 {
@@ -53,7 +57,7 @@ namespace FTWebCrystalReport.Controllers
             }
             catch (Exception ex)
             {
-                message = ex.Message;
+                message =  ex.Message;
                 stsCode = HttpStatusCode.BadRequest;
             }
 
@@ -81,7 +85,6 @@ namespace FTWebCrystalReport.Controllers
         private string genCrystalReport(ft_ORPT t)
         {
             string folder = "", path = "", key = "", filename = "";
-
             ft_ORPT h = new ft_ORPT();
             h = ft_ORPT.LoadById(t.Id);
 
@@ -104,7 +107,7 @@ namespace FTWebCrystalReport.Controllers
                     }
                 }
             }
-
+            string test = "";
             ReportDocument a = new ReportDocument();
             //string sapdb = WebConfigurationManager.AppSettings["sapdb"].ToString();
             string rpt = HostingEnvironment.MapPath("~/" + h.RptPath);
@@ -134,6 +137,7 @@ namespace FTWebCrystalReport.Controllers
                     crtableLogoninfo.ConnectionInfo = crConnectionInfo;
                     CrTable.ApplyLogOnInfo(crtableLogoninfo);
                 }
+                
                 foreach (ft_RPT1 d in t.Lines)
                 {
                     if (d.DataType.ToUpper() == "DATE")
@@ -155,6 +159,7 @@ namespace FTWebCrystalReport.Controllers
             folder = HostingEnvironment.MapPath("~/Pdf/" + t.Id + "/");
             if (!File.Exists(folder))
                 System.IO.Directory.CreateDirectory(folder);
+
             filename = key.Replace("/", "_") + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".pdf";
             path = folder + filename;
             a.ExportToDisk(ExportFormatType.PortableDocFormat, path);
