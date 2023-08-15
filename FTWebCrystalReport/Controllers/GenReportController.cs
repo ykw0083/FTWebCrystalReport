@@ -178,7 +178,13 @@ namespace FTWebCrystalReport.Controllers
 
                         }
                         else
+                        {
+                            if (d.ParamValue.Split(',').Length > 1)
+                            {
+                                throw new Exception("Please enable multi value option is crystal report.");
+                            }
                             a.SetParameterValue(d.ParamName, d.ParamValue);
+                        }
                     }
                 }
             }
