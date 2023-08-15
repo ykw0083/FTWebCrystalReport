@@ -2,7 +2,9 @@
 using CrystalDecisions.Shared;
 using FTWebCrystalReport.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -53,7 +55,12 @@ namespace FTWebCrystalReport.Controllers
 
                 message = genCrystalReport(t);
 
-                ft_ORPT.LoadLinesById_afterlayoutprint(int.Parse(id), int.Parse(docid));
+                var oid = docid.Split(',');
+
+                for (int x = 0; x < oid.Length; x++)
+                {
+                    ft_ORPT.LoadLinesById_afterlayoutprint(int.Parse(id), oid[x]);
+                }
             }
             catch (Exception ex)
             {
@@ -146,12 +153,32 @@ namespace FTWebCrystalReport.Controllers
                     }
                     else if (d.DataType.ToUpper() == "NUMERIC")
                     {
-
                         a.SetParameterValue(d.ParamName, int.Parse(d.ParamValue));
                     }
                     else
                     {
-                        a.SetParameterValue(d.ParamName, d.ParamValue);
+                        if (a.ParameterFields[d.ParamName].EnableAllowMultipleValue)
+                        {
+                            Array values = d.ParamValue.Split(',');
+                            //a.SetParameterValue(d.ParamName, values);
+                            //for(int x = 0; x < values.Length; x++)
+                            //{
+                            //    a.ParameterFields[d.ParamName].CurrentValues.AddValue(values[x]);
+                            //}
+                            //if (values.Length > 1)
+                            //{
+                            //    Array c = values.ToArray();
+                            //    a.SetParameterValue(d.ParamName, c);
+                            //    //var v = a.ParameterFields[d.ParamName].CurrentValues[0];
+
+                            //    //a.ParameterFields[d.ParamName].CurrentValues.AddRange(c);
+                            //}
+                            //else
+                            a.SetParameterValue(d.ParamName, values);
+
+                        }
+                        else
+                            a.SetParameterValue(d.ParamName, d.ParamValue);
                     }
                 }
             }

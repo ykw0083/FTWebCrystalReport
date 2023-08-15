@@ -56,7 +56,7 @@ namespace FTWebCrystalReport.Models
             }
             return h;
         }
-        public static void LoadLinesById_afterlayoutprint(int id, int docid)
+        public static void LoadLinesById_afterlayoutprint(int id, string docid)
         {
             string spName = "LoadORPTById_sp_afterlayoutprint";
             DAC.ExecuteDataTable(spName,
